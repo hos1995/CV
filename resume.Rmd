@@ -1,0 +1,164 @@
+---
+title: "Hayden Smith's Resume"
+author: Hayden Smith
+date: "`r Sys.Date()`"
+output:
+  pagedown::html_resume:
+    css: ['css/custom_resume.css', 'css/styles.css', 'resume']
+    # set it to true for a self-contained HTML page but it'll take longer to render
+    self_contained: true
+---
+
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(
+  results='asis', 
+  echo = FALSE
+)
+library(tidyverse)
+library(glue)
+
+# Set this to true to have links turned into footnotes at the end of the document
+PDF_EXPORT <- FALSE
+
+# Holds all the links that were inserted for placement at the end
+links <- c()
+
+source('parsing_functions.R')
+
+
+# First let's get the data, filtering to only the items tagged as
+# Resume items
+position_data <- read_csv('my.positions.csv') %>% 
+  filter(in_resume) %>% 
+  mutate(
+    # Build some custom sections by collapsing others
+    section = case_when(
+      section %in% c('research_positions', 'internship', 'management') ~ 'positions', 
+      section == 'volunteer' ~ 'volunteer',
+      section == 'relevant_exp' ~ 'soft.skills',
+      TRUE ~ section
+    )
+  ) 
+
+```
+
+
+Aside
+================================================================================
+
+
+![logo](beta_dist.png){width=100%}
+
+Contact {#contact}
+--------------------------------------------------------------------------------
+
+
+
+- <i class="fa fa-envelope"></i> smithha@byui.edu
+- <i class="fa fa-phone"></i> (317) 427-3079
+- <i class="fa fa-linkedin"></i> [Hayden Smith](www.linkedin.com/in/hayden-smith-8b06a9120)
+
+
+
+
+Technical Skills {#skills}
+--------------------------------------------------------------------------------
+
+
+```{r}
+skills <- tribble(
+  ~skill,                      ~level,
+  "Microsoft Office Suite",    5,
+  "Power BI",                  4.25,
+  "Data Analysis",             4,
+  "SQL",                       3.25,
+  "R",                         3.25,
+  "DAX",                       2.5,
+  "SPSS",                      2.5
+)
+build_skill_bars(skills)
+```
+
+
+
+Disclaimer {#disclaimer}
+--------------------------------------------------------------------------------
+
+Made w/ [**pagedown**](https://github.com/rstudio/pagedown). 
+
+Last updated on `r Sys.Date()`.
+
+
+
+
+Main
+================================================================================
+
+Hayden Smith {#title}
+--------------------------------------------------------------------------------
+
+```{r}
+intro_text <- "I am an administrator at BYU-Idaho building reports and data analytics for the Student Records office. I am also a graduate student at ASU in the M.S. Program Evaluation & Data Analytics program. The program courses are teaching me key skills such as data analytics in R, research design techniques, database manipulation, and project management.
+"
+
+
+cat(sanitize_links(intro_text))
+```
+
+
+
+Education {data-icon=graduation-cap data-concise=true}
+--------------------------------------------------------------------------------
+
+```{r}
+position_data %>% print_section('education')
+```
+
+
+
+Position Summary {data-icon=suitcase}
+--------------------------------------------------------------------------------
+
+```{r}
+position_data %>% print_section('positions')
+```
+
+Relevant Skills {data-icon=certificate}
+--------------------------------------------------------------------------------
+
+::: aside
+
+
+```{r}
+rel_skills <- tribble(
+  ~skill,                      ~level,
+  "Collaboration",             4.25,
+  "Problem Solving",           4,
+  "Spanish",                   4,
+  "Leadership",                3.5,
+  "Project Management",        3.5,
+  "Survey Design",             3
+
+)
+build_skill_bars(rel_skills)
+```
+
+:::
+
+```{r}
+position_data %>% print_section('soft.skills')
+```
+
+Volunteer Work {data-icon=hands-helping}
+--------------------------------------------------------------------------------
+
+::: aside
+For more information on what it means to be a *Full-Time Missionary*, please visit [**churchofjesuschrist.org**](https://www.churchofjesuschrist.org/callings/missionary?lang=eng)
+:::
+
+```{r}
+position_data %>% print_section('volunteer')
+```
+
+
